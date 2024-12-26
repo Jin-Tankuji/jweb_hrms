@@ -1,15 +1,12 @@
 package com.nhom2.hrms.controller;
 
 import com.nhom2.hrms.dto.request.EmpRequest;
-import com.nhom2.hrms.dto.request.PosRequest;
 import com.nhom2.hrms.dto.response.ApiResponse;
 import com.nhom2.hrms.entity.Employee;
-import com.nhom2.hrms.entity.Position;
 import com.nhom2.hrms.service.EmpService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

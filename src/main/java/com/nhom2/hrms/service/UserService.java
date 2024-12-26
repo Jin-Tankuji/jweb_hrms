@@ -64,16 +64,14 @@ public class UserService {
     }
 
     // Get all users in the database
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
-        //log.info("In method get all users");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
     // Get user by userId in the database
     @PostAuthorize("returnObject.username == authentication.name")
     public User getUser(String id) {
-        //log.info("In method get User by Id");
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
     }

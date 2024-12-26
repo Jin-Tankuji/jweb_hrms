@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {"/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh"};
+    private final String[] ADMIN_ENDPOINTS = {"/users/read", "/employees/read", "/attendances/read", "/leaves/read", "/payrolls/read"};
 
     @Autowired
     private CustomJwtDecoder jwtDecoder;
@@ -31,7 +32,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users/read").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, ADMIN_ENDPOINTS).hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated());
 
         http.oauth2ResourceServer(oauth2 ->
