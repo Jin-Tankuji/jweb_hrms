@@ -1,6 +1,7 @@
 package com.nhom2.hrms.service;
 
 import com.nhom2.hrms.dto.request.PayrollRequest;
+import com.nhom2.hrms.entity.Attendance;
 import com.nhom2.hrms.entity.Payroll;
 import com.nhom2.hrms.entity.Employee;
 import com.nhom2.hrms.mapper.PayrollMapper;
@@ -41,6 +42,9 @@ public class PayrollService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy bảng tính lương"));
     }
 
+    public List<Payroll> getPayrollByEmployeeId(String employeeId) {
+        return payrollRepository.findByEmployeeEmployeeId(employeeId);
+    }
     // Updates an existing payroll on the provided request and ID
     public Payroll updatePayroll(PayrollRequest req, String id) {
         Payroll payroll = getPayroll(id);
