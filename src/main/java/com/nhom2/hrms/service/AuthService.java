@@ -91,12 +91,12 @@ public class AuthService {
 
         // Generate authentication token for login session
         var token = generateToken(user);
-
-        // Returns an AuthResponse object containing the token and successful authentication status
         return AuthResponse.builder()
-                .token(token)
-                .authenticated(true)
-                .build();
+            .token(token)
+            .authenticated(true)
+            .build();
+
+
     }
 
     public void logout(LogoutRequest req)
