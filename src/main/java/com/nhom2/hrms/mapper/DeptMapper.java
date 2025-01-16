@@ -8,5 +8,5 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface DeptMapper {
     Department toDepartment(DeptRequest req);
-    void updateDept(DeptRequest req, @MappingTarget Department dept);
+    void updateDepartmentFromRequest(DeptRequest req, @MappingTarget Department department);
 }

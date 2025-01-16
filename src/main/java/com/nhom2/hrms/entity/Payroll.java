@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 @Entity
 @Data
@@ -39,4 +40,9 @@ public class Payroll {
 
     @Column(name = "payment_date")
     int paymentDate;
+
+    public String formatCurrency(BigDecimal amount) {
+        DecimalFormat formatter = new DecimalFormat("#,###");
+        return formatter.format(amount) + " VND";
+    }
 }

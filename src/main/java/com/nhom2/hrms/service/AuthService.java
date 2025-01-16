@@ -95,8 +95,6 @@ public class AuthService {
             .token(token)
             .authenticated(true)
             .build();
-
-
     }
 
     public void logout(LogoutRequest req)
@@ -207,10 +205,9 @@ public class AuthService {
     }
 
     private String buildScope(User user) {
-        StringJoiner stringJoiner = new StringJoiner(" ");
-        if (!CollectionUtils.isEmpty(user.getRoles()))
-            user.getRoles().forEach(stringJoiner::add);
-
-        return stringJoiner.toString();
+        if (user.getRole() != null) {
+            return "ROLE_" + user.getRole().name();
+        }
+        return "";
     }
 }

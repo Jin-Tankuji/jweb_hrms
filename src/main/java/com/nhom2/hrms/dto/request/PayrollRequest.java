@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PayrollRequest {
-    EmpRequest employee;
+    String employeeId;
     String payPeriod;
     BigDecimal basicSalary;
     BigDecimal overtimePay;

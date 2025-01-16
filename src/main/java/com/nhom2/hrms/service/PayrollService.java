@@ -5,6 +5,7 @@ import com.nhom2.hrms.entity.Attendance;
 import com.nhom2.hrms.entity.Payroll;
 import com.nhom2.hrms.entity.Employee;
 import com.nhom2.hrms.mapper.PayrollMapper;
+import com.nhom2.hrms.repository.EmpRepository;
 import com.nhom2.hrms.repository.PayrollRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,13 +21,21 @@ import java.util.List;
 public class PayrollService {
     PayrollRepository payrollRepository;
     PayrollMapper payrollMapper;
+    EmpRepository empRepository;
+
+    public List<String> getAllEmployeeId() {
+        return empRepository.findAll().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toList());
+    }
 
     // Creates a new payroll on the request and saves it to the database
     public Payroll createPayroll(PayrollRequest req) {
         Payroll payroll = payrollMapper.toPayroll(req);
 
-        Employee emp = new Employee();
-        emp.setEmployeeId(req.getEmployee().getEmployeeId());
+        Employee emp = empRepository.findById(req.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
+
         payroll.setEmployee(emp);
 
         return payrollRepository.save(payroll);
@@ -50,7 +60,7 @@ public class PayrollService {
         Payroll payroll = getPayroll(id);
 
         Employee emp = new Employee();
-        emp.setEmployeeId(req.getEmployee().getEmployeeId());
+        emp.setEmployeeId(req.getEmployeeId());
         payroll.setEmployee(emp);
         payrollMapper.updatePayroll(req, payroll);
 

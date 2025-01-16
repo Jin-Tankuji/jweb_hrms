@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalTime;
 
 @Entity
 @Data
@@ -27,10 +28,10 @@ public class Attendance {
     Date date;
 
     @Column(name = "check_in")
-    Time checkIn;
+    LocalTime checkIn;
 
     @Column(name = "check_out")
-    Time checkOut;
+    LocalTime checkOut;
 
     @Column(name = "hours_worked", precision = 5, scale = 2)
     BigDecimal hoursWorked;

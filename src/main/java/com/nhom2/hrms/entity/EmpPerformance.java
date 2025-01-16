@@ -4,25 +4,28 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 
-@Entity
 @Data
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Recruitment {
+public class EmpPerformance {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "recruitment_id")
-    String recruitmentId;
+    @Column(name = "performance_id")
+    String performanceId;
 
     @ManyToOne
-    @JoinColumn(name = "position_id")
-    Position position;
+    @JoinColumn(name = "employee_id")
+    Employee employee;
 
-    int quantity;
+    @Column(name = "project_name")
+    String projectName;
 
     @Column(name = "start_date")
     Date startDate;
@@ -30,6 +33,13 @@ public class Recruitment {
     @Column(name = "end_date")
     Date endDate;
 
-    String status;
-    String description;
+    @Column(name = "contribution")
+    String contribution;
+
+    String comments;
+
+    @Column(name = "review_date")
+    Date reviewDate;
+
+    String reviewer;
 }

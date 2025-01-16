@@ -4,6 +4,7 @@ import com.nhom2.hrms.dto.request.LeaveRequest;
 import com.nhom2.hrms.entity.Employee;
 import com.nhom2.hrms.entity.Leave;
 import com.nhom2.hrms.mapper.LeaveMapper;
+import com.nhom2.hrms.repository.EmpRepository;
 import com.nhom2.hrms.repository.LeaveRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,13 +20,20 @@ import java.util.List;
 public class LeaveService {
     LeaveRepository leaveRepository;
     LeaveMapper leaveMapper;
+    EmpRepository empRepository;
+
+    public List<String> getAllEmployeeId() {
+        return empRepository.findAll().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toList());
+    }
 
     // Creates a new Leave on the request and saves it to the database
     public Leave createLeave(LeaveRequest req) {
         Leave leave = leaveMapper.toLeave(req);
 
         Employee emp = new Employee();
-        emp.setEmployeeId(req.getEmployee().getEmployeeId());
+        emp.setEmployeeId(req.getEmployeeId());
         leave.setEmployee(emp);
 
         return leaveRepository.save(leave);
@@ -46,7 +55,7 @@ public class LeaveService {
         Leave leave = getLeave(id);
 
         Employee emp = new Employee();
-        emp.setEmployeeId(req.getEmployee().getEmployeeId());
+        emp.setEmployeeId(req.getEmployeeId());
         leave.setEmployee(emp);
 
         leaveMapper.updateLeave(req, leave);
