@@ -10,11 +10,13 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RecmtRequest {
-    PosRequest position;
-    int quantity;
+public class EmpPerformanceRequest {
+    String employeeId;
+    String projectName;
     Date startDate;
     Date endDate;
-    String status;
-    String description;
+    String contribution;
+    String comments;
+    Date reviewDate;
+    String reviewer;
 }

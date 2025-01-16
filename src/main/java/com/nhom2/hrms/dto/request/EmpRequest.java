@@ -18,7 +18,7 @@ public class EmpRequest {
     Date dateOfBirth;
     String gender;
     Date hireDate;
-    DeptRequest department;
-    PosRequest position;
+    String departmentId;
+    String positionId;
     BigDecimal salary;
 }

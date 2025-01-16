@@ -5,13 +5,14 @@ import com.nhom2.hrms.entity.Attendance;
 import com.nhom2.hrms.entity.Employee;
 import com.nhom2.hrms.mapper.AttdMapper;
 import com.nhom2.hrms.repository.AttdRepository;
+import com.nhom2.hrms.repository.EmpRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,13 +20,22 @@ import java.util.List;
 public class AttdService {
     AttdRepository attdRepository;
     AttdMapper attdMapper;
+    EmpRepository empRepository;
+
+    public List<String> getAllEmployeeId() {
+        return empRepository.findAll().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toList());
+    }
 
     // Creates a new attendance on the request and saves it to the database
     public Attendance createAttendance(AttdRequest req) {
         Attendance attd = attdMapper.toAttendance(req);
 
-        Employee emp = new Employee();
-        emp.setEmployeeId(req.getEmployee().getEmployeeId());
+        // Lấy Employee từ database
+        Employee emp = empRepository.findById(req.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
+
         attd.setEmployee(emp);
 
         return attdRepository.save(attd);
@@ -51,7 +61,7 @@ public class AttdService {
         Attendance attd = getAttendance(id);
 
         Employee emp = new Employee();
-        emp.setEmployeeId(req.getEmployee().getEmployeeId());
+        emp.setEmployeeId(req.getEmployeeId());
         attd.setEmployee(emp);
         attdMapper.updateAttendance(req, attd);
 

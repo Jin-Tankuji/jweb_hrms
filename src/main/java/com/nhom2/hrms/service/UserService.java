@@ -6,6 +6,7 @@ import com.nhom2.hrms.entity.Employee;
 import com.nhom2.hrms.entity.User;
 import com.nhom2.hrms.enums.Role;
 import com.nhom2.hrms.mapper.UserMapper;
+import com.nhom2.hrms.repository.EmpRepository;
 import com.nhom2.hrms.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +29,15 @@ import java.util.Set;
 @Slf4j
 public class UserService {
     UserRepository userRepository;
+    EmpRepository empRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+
+    public List<String> getAllEmployeeId() {
+        return empRepository.findAll().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toList());
+    }
 
     // Add a new user to the database
     public User createUser(UserRequest req) {
@@ -38,16 +47,15 @@ public class UserService {
         User user = userMapper.toUser(req);
 
         // Select id from table Employee
-        Employee emp = new Employee();
-        emp.setEmployeeId(req.getEmployee().getEmployeeId());
+        Employee emp = empRepository.findById(req.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
+
         user.setEmployee(emp);
 
         // Encrypt password by BCrypt
         user.setPassword(passwordEncoder.encode(req.getPassword()));
 
-        Set<String> roles = new HashSet<>();
-        roles.add(Role.MEMBER.name());
-        user.setRoles(roles);
+        user.setRole(Role.MEMBER);
 
         return userRepository.save(user);
     }
@@ -65,9 +73,20 @@ public class UserService {
 
     // Get all users in the database
     //@PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponse> getUsers() {
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+//    public List<UserResponse> getUsers() {
+//        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+//    }
+
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
+
+    public List<User> getAllUserHaveEmployeeId() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getEmployee() != null && user.getEmployee().getEmployeeId() != null && !user.getEmployee().getEmployeeId().isEmpty())
+                .collect(Collectors.toList());
+    }
+
 
     // Get user by userId in the database
     @PostAuthorize("returnObject.username == authentication.name")
@@ -89,6 +108,7 @@ public class UserService {
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }
+}
 
       // Add role after have user
 //    @PutMapping("/users/{userId}/roles")
@@ -102,4 +122,4 @@ public class UserService {
 //        }
 //        return ResponseEntity.notFound().build();
 //    }
-}
+

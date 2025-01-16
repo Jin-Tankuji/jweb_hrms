@@ -11,7 +11,7 @@ import java.sql.Date;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LeaveRequest {
-    EmpRequest employee;
+    String employeeId;
     String leaveType;
     Date startDate;
     Date endDate;

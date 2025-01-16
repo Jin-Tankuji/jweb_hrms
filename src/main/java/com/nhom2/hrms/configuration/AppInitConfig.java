@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
-
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -26,13 +24,10 @@ public class AppInitConfig {
     ApplicationRunner init(UserRepository userRepository) {
         return args -> {
             if (userRepository.findByUsername("admin").isEmpty()) {
-                var roles = new HashSet<String>();
-                roles.add(Role.ADMIN.name());
-
                 User user = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
-                        .roles(Role.ADMIN.name())
+                        .role(Role.ADMIN)  // Sửa roles -> role (Enum)
                         .build();
 
                 userRepository.save(user);
@@ -40,6 +35,4 @@ public class AppInitConfig {
             }
         };
     }
-
-
 }

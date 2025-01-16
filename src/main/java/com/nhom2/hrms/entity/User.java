@@ -1,5 +1,6 @@
 package com.nhom2.hrms.entity;
 
+import com.nhom2.hrms.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -29,14 +30,7 @@ public class User {
     @Column(name = "password_hash")
     String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    String roles;
-
-    public void setRoles(Set<String> roles) {
-        this.roles = String.join(", ", roles);
-    }
-
-    public Set<String> getRoles() {
-        return new HashSet<>(Arrays.asList(roles.split(", ")));
-    }
+    Role role;
 }

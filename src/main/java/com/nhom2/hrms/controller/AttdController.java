@@ -1,62 +1,90 @@
 package com.nhom2.hrms.controller;
 
 import com.nhom2.hrms.dto.request.AttdRequest;
-import com.nhom2.hrms.dto.response.ApiResponse;
 import com.nhom2.hrms.entity.Attendance;
 import com.nhom2.hrms.service.AttdService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/attendances")
+@Controller
+@RequestMapping("/attendance")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AttdController {
     AttdService attdService;
 
+    // Hiển thị danh sách bảng chấm công
+    @GetMapping
+    public String showPage(@RequestParam(defaultValue = "0") int page,
+                           @RequestParam(defaultValue = "5") int size,
+                           Model model) {
+        List<String> empIdList = attdService.getAllEmployeeId();
+        List<Attendance> allAttendances = attdService.getAttendances();
+
+        // Tính toán số trang
+        int totalPages = (int) Math.ceil((double) allAttendances.size() / size);
+
+        // Lấy danh sách phân trang
+        int start = page * size;
+        int end = Math.min(start + size, allAttendances.size());
+        List<Attendance> attendances = allAttendances.subList(start, end);
+
+        model.addAttribute("attdRequest", new AttdRequest());
+        model.addAttribute("empIds", empIdList);
+        model.addAttribute("attendances", attendances);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
+        return "attendance";
+    }
+
+    // Xử lý thêm mới bảng chấm công
     @PostMapping("/create")
-    ApiResponse<Attendance> createAttendance(@RequestBody AttdRequest req) {
-        return ApiResponse.<Attendance>builder()
-                .result(attdService.createAttendance(req))
-                .build();
+    public String createAttendance(@ModelAttribute("attdRequest") AttdRequest req,
+                                   RedirectAttributes redirectAttributes) {
+        attdService.createAttendance(req);
+        redirectAttributes.addFlashAttribute("successMessage", "Thêm bảng chấm công thành công!");
+        return "redirect:/attendance";
     }
 
-    @GetMapping("/read")
-    ApiResponse<List<Attendance>> getAttendances() {
-        return ApiResponse.<List<Attendance>>builder()
-                .result(attdService.getAttendances())
-                .build();
+    // Hiển thị form cập nhật bảng chấm công
+    @GetMapping("/update/{id}")
+    public String showUpdateForm(@PathVariable String id, Model model) {
+        Attendance attendance = attdService.getAttendance(id);
+        model.addAttribute("attdRequest", attendance);
+        return "attendance";
     }
 
-    @GetMapping("/read/{attdId}")
-    ApiResponse<Attendance> getAttendance(@PathVariable String attdId) {
-        return ApiResponse.<Attendance>builder()
-                .result(attdService.getAttendance(attdId))
-                .build();
+    // Xử lý cập nhật bảng chấm công
+    @PostMapping("/update/{id}")
+    public String updateAttendance(@PathVariable String id,
+                                   @ModelAttribute("attdRequest") AttdRequest req,
+                                   RedirectAttributes redirectAttributes) {
+        attdService.updateAttendance(req, id);
+        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật bảng chấm công thành công!");
+        return "redirect:/attendance";
     }
 
-    @GetMapping("/read/myAttendance/{employeeId}")
-    ApiResponse<List<Attendance>> myAttendance(@PathVariable String employeeId) {
-        List<Attendance> attendanceList = attdService.getAttendanceByEmployeeId(employeeId);
-        return ApiResponse.<List<Attendance>>builder()
-                .result(attendanceList)
-                .build();
+    // Xóa bảng chấm công
+    @GetMapping("/delete/{id}")
+    public String deleteAttendance(@PathVariable String id, RedirectAttributes redirectAttributes) {
+        attdService.deleteAttendance(id);
+        redirectAttributes.addFlashAttribute("successMessage", "Xóa bảng chấm công thành công!");
+        return "redirect:/attendance";
     }
 
-    @PutMapping("/update/{attdId}")
-    ApiResponse<Attendance> updateAttendance(@PathVariable String attdId, @RequestBody AttdRequest req) {
-        return ApiResponse.<Attendance>builder()
-                .result(attdService.updateAttendance(req, attdId))
-                .build();
-    }
-
-    @DeleteMapping("/delete/{attdId}")
-    String deleteAttendance(@PathVariable String attdId) {
-        attdService.deleteAttendance(attdId);
-        return "Attendance has been deleted";
+    // Xem chi tiết bảng chấm công
+    @GetMapping("/detail/{id}")
+    public String viewAttendanceDetail(@PathVariable String id, Model model) {
+        Attendance attendance = attdService.getAttendance(id);
+        model.addAttribute("attendance", attendance);
+        return "attendance/detail";
     }
 }

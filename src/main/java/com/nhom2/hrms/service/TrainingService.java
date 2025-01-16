@@ -19,9 +19,13 @@ public class TrainingService {
     TrainingMapper trainingMapper;
 
     // Creates a new Training on the request and saves it to the database
-    public Training createTraining(TrainingRequest req) {
+    public void createTraining(TrainingRequest req) {
+        if (trainingRepository.existsByCourseName((req.getCourseName()))) {
+            throw new RuntimeException("Chương trình đào tạo đã tồn tại!");
+        }
+
         Training training = trainingMapper.toTraining(req);
-        return trainingRepository.save(training);
+        trainingRepository.save(training);
     }
 
     // Retrieves all Trainings from the database
@@ -36,14 +40,23 @@ public class TrainingService {
     }
 
     // Updates an existing Training on the provided request and ID
-    public Training updateTraining(TrainingRequest req, String id) {
-        Training training = getTraining(id);
-        trainingMapper.updateTraining(req, training);
-        return trainingRepository.save(training);
+    public void updateTraining( String id, TrainingRequest req) {
+        Training exTraining = trainingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy khóa đào tạo"));
+        trainingMapper.updateTraining(req, exTraining);
+
+        trainingRepository.save(exTraining);
     }
 
     // Deletes a Training by its ID
     public void deleteTraining(String id) {
+        if (!trainingRepository.existsById(id)) {
+            throw new RuntimeException("Không tìm thấy chương trình đào tạo cần xóa");
+        }
         trainingRepository.deleteById(id);
+    }
+
+    public List<Training> searchTrainingByCourseName(String courseName) {
+        return trainingRepository.findTrainingByCourseNameContainingIgnoreCase(courseName);
     }
 }
